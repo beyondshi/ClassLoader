@@ -1,5 +1,6 @@
 package com.catherine.classloader;
 
+import android.util.Log;
 import java.lang.reflect.Field;
 
 /**
@@ -9,7 +10,7 @@ import java.lang.reflect.Field;
 
 public class Smith<T> {
     private Object obj; //ClassLoader
-
+    private String TAG = "Smith";
     private boolean inited; //first time app launch
     private Field field;
 
@@ -18,16 +19,16 @@ public class Smith<T> {
             throw new IllegalArgumentException("obj cannot be null");
         }
         this.obj = obj;
+        Log.d(TAG, "obj : " + obj);
     }
 
     private void prepare() {
-        if (inited)
-            return;
+        if (inited) return;
         inited = true;
         Class<?> c = obj.getClass();
         while (c != null) {
             try {
-                Field f = c.getDeclaredField("parent"); //f here might be the classLoader of loaded classLoader's parents
+                Field f = c.getDeclaredField("parent"); // here might be the classLoader of loaded classLoader's parents
                 f.setAccessible(true);
                 field = f;
                 return;
@@ -42,12 +43,10 @@ public class Smith<T> {
     public T get() throws NoSuchFieldException, IllegalAccessException, IllegalArgumentException {
         prepare();
 
-        if (field == null)
-            throw new NoSuchFieldException();
+        if (field == null) throw new NoSuchFieldException();
 
         try {
-            @SuppressWarnings("unchecked")
-            T r = (T) field.get(obj);
+            @SuppressWarnings("unchecked") T r = (T) field.get(obj);
             return r;
         } catch (ClassCastException e) {
             throw new IllegalArgumentException("unable to cast object");
@@ -56,8 +55,7 @@ public class Smith<T> {
 
     public void set(T val) throws NoSuchFieldException, IllegalAccessException, IllegalArgumentException {
         prepare();
-        if (field == null)
-            throw new NoSuchFieldException();
+        if (field == null) throw new NoSuchFieldException();
 
         field.set(obj, val);
     }

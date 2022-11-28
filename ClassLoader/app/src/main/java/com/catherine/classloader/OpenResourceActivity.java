@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -102,12 +101,7 @@ public class OpenResourceActivity extends Activity implements View.OnClickListen
     public String getApkInfo(String fileName) {
         try {
             String dexPath = null;
-            if (getExternalFilesDir(null) != null) {
-                dexPath = new File(getExternalFilesDir(null), fileName).getAbsolutePath();
-            } else if (getFilesDir() != null) {
-                dexPath = new File(getFilesDir(), fileName).getAbsolutePath();
-            }
-
+            dexPath = new File(getFilesDir(), fileName).getAbsolutePath();
             PackageManager pm = getPackageManager();
             PackageInfo info = pm.getPackageArchiveInfo(dexPath, 0);
 

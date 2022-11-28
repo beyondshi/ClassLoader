@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -66,14 +65,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bt_load_apk1:
-//                ((MyApplication) getApplication()).RemoveApk();
                 openApk(MyConfig.apk1);
                 break;
             case R.id.bt_load_apk2:
-//                ((MyApplication) getApplication()).RemoveApk();
-//                openApk(MyConfig.apk2);
-
-
                 Intent intent2 = new Intent();
                 intent2.setClass(MainActivity.this, OpenResourceActivity.class);
                 startActivity(intent2);
@@ -224,14 +218,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
     public String getApkInfo(String fileName) {
         try {
             String dexPath = null;
-            if (getExternalFilesDir(null) != null) {
-                dexPath = new File(getExternalFilesDir(null), fileName).getAbsolutePath();
-            } else if (getFilesDir() != null) {
-                dexPath = new File(getFilesDir(), fileName).getAbsolutePath();
-            }
-
+            dexPath = new File(getFilesDir(), fileName).getAbsolutePath();
             PackageManager pm = getPackageManager();
             PackageInfo info = pm.getPackageArchiveInfo(dexPath, 0);
+
             return String.format(Locale.ENGLISH, "\n*** Apk info ***\nversionCode:%d\nversionName:%s\n*** Apk info ***\n",
                     info.versionCode,
                     info.versionName);

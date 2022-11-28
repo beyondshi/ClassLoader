@@ -6,8 +6,10 @@ import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.Log;
-
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Stack;
@@ -101,17 +103,12 @@ public class MyApplication extends Application {
         Log.d(TAG, "LoadApk()");
         Log.d(TAG, "CLs:" + CLs.size());
         Log.d(TAG, "parents:" + parents.size());
-        if (getExternalFilesDir(null) != null) {
-            dexPath = new File(getExternalFilesDir(null), fileName).getAbsolutePath();
-        } else if (getFilesDir() != null) {
-            dexPath = new File(getFilesDir(), fileName).getAbsolutePath();
-        }
-
+        dexPath = new File(getFilesDir(), fileName).getAbsolutePath();
 
         ClassLoader defaultCL = getClass().getClassLoader();
         Log.d(TAG, "defaultCL:" + defaultCL.toString());
         Log.d(TAG, "parent:" + defaultCL.getParent().toString());
-        sm = new Smith<>(defaultCL);
+        sm = new Smith(defaultCL);
         if (CLs.size() == 0)
             CLs.push(defaultCL);
 
@@ -170,16 +167,47 @@ public class MyApplication extends Application {
     }
 
     public void createPath() {
-        File file;
-        if (getExternalFilesDir(null) != null) {
-            file = getExternalFilesDir(null);
-        } else {
-            file = getFilesDir();
+        // 从 assets 中拿出插件 apk 放到内部存储空间
+        try {
+            InputStream inputStream1 = getAssets().open("Resource1.apk");
+            File file1 = new File(getFilesDir().getAbsolutePath(), "Resource1.apk");
+            FileOutputStream fos = new FileOutputStream(file1);
+            byte[] buffer = new byte[1024];
+            int byteCount;
+            while ((byteCount = inputStream1.read(buffer)) != -1) {// 循环从输入流读取
+                // buffer字节
+                fos.write(buffer, 0, byteCount);// 将读取的输入流写入到输出流
+            }
+            fos.flush();// 刷新缓冲区
+            inputStream1.close();
+            fos.close();
+
+            InputStream inputStream2 = getAssets().open("Resource2.apk");
+            File file2 = new File(getFilesDir().getAbsolutePath(), "Resource2.apk");
+            FileOutputStream fos2 = new FileOutputStream(file2);
+            byte[] buffer2 = new byte[1024];
+            int byteCount2;
+            while ((byteCount2 = inputStream2.read(buffer2)) != -1) {// 循环从输入流读取
+                // buffer字节
+                fos2.write(buffer2, 0, byteCount2);// 将读取的输入流写入到输出流
+            }
+            fos2.flush();// 刷新缓冲区
+            inputStream2.close();
+            fos2.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        if (!file.exists()) {
-            file.mkdir();
-        }
+//        File file;
+//        if (getExternalFilesDir(null) != null) {
+//            file = getExternalFilesDir(null);
+//        } else {
+//            file = getFilesDir();
+//        }
+//
+//        if (!file.exists()) {
+//            file.mkdir();
+//        }
     }
 
     @Override
